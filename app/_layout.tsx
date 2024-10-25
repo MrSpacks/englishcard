@@ -1,37 +1,50 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { Tabs } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
+export default function TabLayout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+    <Tabs
+  screenOptions={{
+    tabBarActiveTintColor: '#ffd33d',
+    headerStyle: {
+      backgroundColor: '#25292e',
+    },
+    headerShadowVisible: false,
+    headerTintColor: '#fff',
+    tabBarStyle: {
+    backgroundColor: '#25292e',
+    },
+  }}
+>
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Home',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="learn"
+        options={{
+          title: 'learn',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'book' : 'book-outline'} size={24} color={color}/>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="add"
+        options={{
+          title: 'ADD',
+          tabBarIcon: ({ color, focused }) => (
+           <AntDesign name={focused ? 'pluscircleo' : 'plus'} size={24} color={color} />
+           
+          ),
+        }}
+      />
+    </Tabs>
   );
 }

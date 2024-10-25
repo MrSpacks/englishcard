@@ -31,6 +31,12 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e3e17a6c-2989-487d-9242-eac12a4b09da"
+      }
+    },
+    "owner": "sergeipetukhov"
   }
 }
