@@ -1,68 +1,59 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Button, TouchableOpacity, StyleSheet } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
+import React, { useState, useCallback } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  Button,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
+import { useWords } from "../context/WordsContext";
 
+// Определяем тип для каждого слова
 interface Word {
   id: string;
   native: string;
   translation: string;
 }
 
+const STORAGE_KEY = "@words_list";
+
 const WordListScreen = () => {
-  const [words, setWords] = useState<Word[]>([]);
+  const [words, setWords] = useState<Word[]>([]); // Указываем, что words - это массив объектов типа Word
   const router = useRouter();
+  const { loadWords, words: contextWords } = useWords();
 
-  // Ключ для хранения данных в AsyncStorage
-  const STORAGE_KEY = '@words_list';
+  useFocusEffect(
+    useCallback(() => {
+      loadWords();
+    }, [contextWords])
+  );
 
-  // Функция для загрузки слов из AsyncStorage при монтировании компонента
-  useEffect(() => {
-    const loadWords = async () => {
-      try {
-        const storedWords = await AsyncStorage.getItem(STORAGE_KEY);
-        if (storedWords) {
-          setWords(JSON.parse(storedWords));
-        }
-      } catch (error) {
-        console.error('Failed to load words from storage', error);
-      }
-    };
-    loadWords();
-  }, []);
-
-  // Функция для сохранения слов в AsyncStorage
-  const saveWords = async (newWords: Word[]) => {
-    try {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newWords));
-      setWords(newWords);
-    } catch (error) {
-      console.error('Failed to save words to storage', error);
-    }
-  };
-
-  // Функция для удаления слова
-  const handleDeleteWord = (id: string) => {
-    const updatedWords = words.filter(word => word.id !== id);
-    saveWords(updatedWords); // Сохраняем обновленный список
+  const handleDeleteWord = async (id: string) => {
+    const updatedWords = words.filter((word) => word.id !== id);
+    setWords(updatedWords);
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedWords));
   };
 
   return (
     <View style={styles.container}>
-      {/* <Button title="Добавить" onPress={() => router.push('/add')} /> */}
       <FlatList
-        data={words}
+        data={contextWords}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.wordContainer}>
-            <Text>{item.native} - {item.translation}</Text>
+            <Text>
+              {item.native} - {item.translation}
+            </Text>
             <TouchableOpacity onPress={() => handleDeleteWord(item.id)}>
               <Text style={styles.deleteButton}>Удалить</Text>
             </TouchableOpacity>
           </View>
         )}
       />
-      {/* <Button title="Учить слова" onPress={() => router.push('/learn')} /> */}
     </View>
   );
 };
@@ -71,17 +62,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    justifyContent: 'center',
   },
   wordContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderBottomColor: "#ccc",
   },
   deleteButton: {
-    color: 'red',
+    color: "red",
   },
 });
 

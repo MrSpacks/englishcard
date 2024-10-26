@@ -1,96 +1,123 @@
-import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet, Image, Animated } from 'react-native';
+import React from "react";
+import { View, Text, Button, StyleSheet, Animated } from "react-native";
 
 interface CardProps {
   word: string;
   translation: string;
-  imageUrl?: string;
-  onKnow: () => void;
-  onDontKnow: () => void;
+  flipped: boolean;
+  onFlip: () => void;
+  onNext: () => void;
 }
 
-const Card: React.FC<CardProps> = ({ word, translation, imageUrl, onKnow, onDontKnow }) => {
-  const [flipped, setFlipped] = useState(false);
-  const flipAnim = new Animated.Value(0);
+const Card: React.FC<CardProps> = ({
+  word,
+  translation,
+  flipped,
+  onFlip,
+  onNext,
+}) => {
+  const flipAnim = React.useRef(new Animated.Value(0)).current;
 
-  const flipCard = () => {
+  React.useEffect(() => {
     Animated.timing(flipAnim, {
-      toValue: flipped ? 0 : 1,
+      toValue: flipped ? 1 : 0,
       duration: 300,
       useNativeDriver: true,
-    }).start(() => setFlipped(!flipped)); // Устанавливаем состояние flipped после анимации
+    }).start();
+  }, [flipped]);
+
+  const frontStyle = {
+    transform: [
+      {
+        rotateY: flipAnim.interpolate({
+          inputRange: [0, 1],
+          outputRange: ["0deg", "180deg"],
+        }),
+      },
+    ],
   };
 
-  const frontInterpolate = flipAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '180deg'],
-  });
-
-  const backInterpolate = flipAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['180deg', '360deg'],
-  });
+  const backStyle = {
+    transform: [
+      {
+        rotateY: flipAnim.interpolate({
+          inputRange: [0, 1],
+          outputRange: ["180deg", "360deg"],
+        }),
+      },
+    ],
+  };
 
   return (
     <View style={styles.cardContainer}>
-      {!flipped ? (
-        // Передняя сторона карточки
-        <Animated.View style={[styles.card, { transform: [{ rotateY: frontInterpolate }] }]}>
+      {/* Передняя сторона */}
+      <Animated.View
+        style={[styles.card, frontStyle, { zIndex: flipped ? 0 : 1 }]}
+      >
+        <View style={styles.cardContent}>
           <Text style={styles.wordText}>{word}</Text>
           <View style={styles.buttonContainer}>
-            <Button title="Не знаю" onPress={flipCard} />
-            <Button title="Знаю" onPress={onKnow} />
+            <Button title="Не знаю" onPress={onFlip} />
+            <Button title="Знаю" onPress={onNext} />
           </View>
-        </Animated.View>
-      ) : (
-        // Задняя сторона карточки
-        <Animated.View style={[styles.card, { transform: [{ rotateY: backInterpolate }] }]}>
+        </View>
+      </Animated.View>
+
+      {/* Задняя сторона */}
+      <Animated.View
+        style={[
+          styles.card,
+          styles.back,
+          backStyle,
+          { zIndex: flipped ? 1 : 0 },
+        ]}
+      >
+        <View style={styles.cardContent}>
           <Text style={styles.wordText}>{translation}</Text>
-          {imageUrl && <Image source={{ uri: imageUrl }} style={styles.image} />}
-          <Button title="Запомнил" onPress={() => {
-            setFlipped(false);  // Сбрасываем состояние переворота
-            onDontKnow();       // Переход к следующей карточке
-          }} />
-        </Animated.View>
-      )}
+          <Button title="Запомнил" onPress={onNext} />
+        </View>
+      </Animated.View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   cardContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 20,
-  },
-  card: {
     width: 300,
     height: 400,
-    backgroundColor: '#fff',
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  card: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#fff",
     borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
+    backfaceVisibility: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
     shadowRadius: 10,
-    backfaceVisibility: 'hidden',
+  },
+  back: {
+    backgroundColor: "#e0e0e0",
+  },
+  cardContent: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
   },
   wordText: {
     fontSize: 24,
-    fontWeight: 'bold',
     marginBottom: 20,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '80%',
-    marginTop: 20,
-  },
-  image: {
-    width: 200,
-    height: 200,
-    marginTop: 20,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "80%",
   },
 });
 
