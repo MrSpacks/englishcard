@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   View,
   TextInput,
-  Button,
   StyleSheet,
   Alert,
   Image,
@@ -12,6 +11,7 @@ import {
 import { useRouter } from "expo-router";
 import { useWords } from "../context/WordsContext";
 import * as ImagePicker from "expo-image-picker";
+import Entypo from "@expo/vector-icons/Entypo";
 
 const AddWordScreen = () => {
   const [nativeWord, setNativeWord] = useState("");
@@ -52,6 +52,24 @@ const AddWordScreen = () => {
     }
   };
 
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("Ошибка", "Разрешение на использование камеры отклонено");
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [3, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImageUri(result.assets[0].uri);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -71,10 +89,15 @@ const AddWordScreen = () => {
       <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
         <Text style={styles.imagePickerText}>Выбрать изображение</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.imagePicker} onPress={takePhoto}>
+        <Text style={styles.imagePickerText}>Сделать фото</Text>
+      </TouchableOpacity>
       {imageUri && (
         <Image source={{ uri: imageUri }} style={styles.imagePreview} />
       )}
-      <Button title="Добавить" onPress={handleAddWord} />
+      <TouchableOpacity style={styles.button} onPress={handleAddWord}>
+        <Entypo name="plus" size={24} color="white" />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -82,29 +105,54 @@ const AddWordScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#141414",
     padding: 20,
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
+    borderColor: "#2C2C2C",
+    backgroundColor: "#1E1E1E",
+    color: "#FFFFFF",
+    padding: 12,
     marginBottom: 20,
-    borderRadius: 5,
+    borderRadius: 8,
   },
   imagePicker: {
-    backgroundColor: "#ddd",
-    padding: 10,
+    backgroundColor: "#2C2C2C",
+    padding: 12,
     alignItems: "center",
     marginBottom: 20,
-    borderRadius: 5,
+    borderRadius: 8,
   },
   imagePickerText: {
-    color: "#000",
+    color: "#FFFFFF",
+    fontSize: 16,
   },
   imagePreview: {
     width: "100%",
     height: 200,
+    backgroundColor: "#333",
+    borderRadius: 8,
     marginBottom: 20,
+  },
+  addButton: {
+    backgroundColor: "#325AFF",
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  addButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  button: {
+    backgroundColor: "#325AFF", // Насыщенный синий цвет для кнопок
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignItems: "center",
   },
 });
 

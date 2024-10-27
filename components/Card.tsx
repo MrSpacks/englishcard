@@ -1,5 +1,13 @@
 import React from "react";
-import { View, Text, Button, StyleSheet, Animated, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Animated,
+  Image,
+  TouchableOpacity,
+} from "react-native";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 interface CardProps {
   item: {
@@ -56,8 +64,20 @@ const Card: React.FC<CardProps> = ({ item, flipped, onFlip, onNext }) => {
         <View style={styles.cardContent}>
           <Text style={styles.wordText}>{item.word}</Text>
           <View style={styles.buttonContainer}>
-            <Button title="Не знаю" onPress={onFlip} />
-            <Button title="Знаю" onPress={onNext} />
+            <TouchableOpacity style={styles.button} onPress={onFlip}>
+              <Text>
+                <FontAwesome6 name="arrows-rotate" size={24} color="white" />
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={onNext}>
+              <Text>
+                <FontAwesome6
+                  name="arrow-alt-circle-right"
+                  size={24}
+                  color="white"
+                />
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Animated.View>
@@ -84,7 +104,15 @@ const Card: React.FC<CardProps> = ({ item, flipped, onFlip, onNext }) => {
           ) : (
             <Text style={styles.noImageText}>Изображение отсутствует</Text>
           )}
-          <Button title="Запомнил" onPress={onNext} />
+          <TouchableOpacity style={styles.button} onPress={onNext}>
+            <Text>
+              <FontAwesome6
+                name="arrow-alt-circle-right"
+                size={24}
+                color="white"
+              />
+            </Text>
+          </TouchableOpacity>
         </View>
       </Animated.View>
     </View>
@@ -97,23 +125,27 @@ const styles = StyleSheet.create({
     height: 400,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#141414", // Темный фон для области карточки
+    borderRadius: 15,
+    padding: 10,
   },
   card: {
     position: "absolute",
     width: "100%",
     height: "100%",
-    backgroundColor: "#fff",
-    borderRadius: 10,
+    backgroundColor: "#1E1E1E", // Темный фон карточки
+    borderRadius: 12,
     backfaceVisibility: "hidden",
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.4,
     shadowRadius: 10,
   },
   back: {
-    backgroundColor: "#e0e0e0",
+    backgroundColor: "#2C2C2C", // Темный фон задней стороны карточки
+    borderRadius: 12,
   },
   cardContent: {
     alignItems: "center",
@@ -121,27 +153,37 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   wordText: {
-    fontSize: 24,
+    fontSize: 30,
+    color: "#FFFFFF", // Белый цвет для текста, чтобы выделяться на темном фоне
     marginBottom: 20,
     textAlign: "center",
   },
   cardImage: {
     width: 200,
-    height: 150,
+    height: 200,
     marginBottom: 20,
     borderRadius: 10,
-    resizeMode: "contain",
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#333", // Темный фон для картинки
   },
   noImageText: {
     fontSize: 16,
-    color: "#888",
+    color: "#888", // Светло-серый цвет для текста, если нет изображения
     marginBottom: 20,
+    textAlign: "center",
   },
   buttonContainer: {
+    position: "absolute",
+    bottom: -125,
     flexDirection: "row",
-    justifyContent: "space-around",
-    width: "80%",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  button: {
+    backgroundColor: "#325AFF", // Насыщенный синий цвет для кнопок
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignItems: "center",
   },
 });
 

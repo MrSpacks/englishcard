@@ -49,12 +49,12 @@ const WordListScreen = () => {
               <Image source={{ uri: item.imageUri }} style={styles.wordImage} />
             )}
             <View style={styles.wordTextContainer}>
-              <Text>
+              <Text style={styles.wordText}>
                 {item.native} - {item.translation}
               </Text>
             </View>
             <TouchableOpacity onPress={() => handleDeleteWord(item.id)}>
-              <AntDesign name="delete" size={24} color="black" />
+              <AntDesign name="delete" size={24} color="red" />
             </TouchableOpacity>
           </View>
         )}
@@ -66,26 +66,36 @@ const WordListScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#141414",
     padding: 20,
   },
   wordContainer: {
     flexDirection: "row",
-    alignItems: "center", // Добавлено для выравнивания элементов по вертикали
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    alignItems: "center",
+    padding: 12,
+    marginBottom: 8,
+    backgroundColor: "#1E1E1E",
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
   wordImage: {
     width: 50,
     height: 50,
-    marginRight: 10,
-    borderRadius: 5,
+    marginRight: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "rgba(200, 200, 200, 0.2)",
   },
   wordTextContainer: {
     flex: 1,
   },
-  deleteButton: {
-    color: "red",
+  wordText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
 

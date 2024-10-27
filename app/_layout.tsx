@@ -28,7 +28,7 @@ export default function TabLayout() {
               <Ionicons
                 name={focused ? "home-sharp" : "home-outline"}
                 color={color}
-                size={24}
+                size={25}
               />
             ),
           }}
@@ -40,7 +40,7 @@ export default function TabLayout() {
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 name={focused ? "book" : "book-outline"}
-                size={24}
+                size={25}
                 color={color}
               />
             ),
@@ -53,7 +53,7 @@ export default function TabLayout() {
             tabBarIcon: ({ color, focused }) => (
               <AntDesign
                 name={focused ? "pluscircleo" : "plus"}
-                size={24}
+                size={25}
                 color={color}
               />
             ),
