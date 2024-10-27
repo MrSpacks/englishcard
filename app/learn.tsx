@@ -50,8 +50,11 @@ const LearnScreen = () => {
     <View style={styles.container}>
       <Animated.View style={{ transform: [{ translateX: slideAnim }] }}>
         <Card
-          word={currentWord.native}
-          translation={currentWord.translation}
+          item={{
+            word: currentWord.native,
+            translation: currentWord.translation,
+            imageUri: currentWord.imageUri, // если есть изображение
+          }}
           flipped={flipped}
           onFlip={handleFlip}
           onNext={handleNext}

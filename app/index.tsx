@@ -3,9 +3,9 @@ import {
   View,
   Text,
   FlatList,
-  Button,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -13,11 +13,11 @@ import { useFocusEffect } from "@react-navigation/native";
 import { useWords } from "../context/WordsContext";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
-// Определяем тип для каждого слова
 interface Word {
   id: string;
   native: string;
   translation: string;
+  imageUri?: string;
 }
 
 const STORAGE_KEY = "@words_list";
@@ -45,13 +45,16 @@ const WordListScreen = () => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.wordContainer}>
-            <Text>
-              {item.native} - {item.translation}
-            </Text>
-            <TouchableOpacity onPress={() => handleDeleteWord(item.id)}>
-              <Text style={styles.deleteButton}>
-                <AntDesign name="delete" size={24} color="black" />
+            {item.imageUri && (
+              <Image source={{ uri: item.imageUri }} style={styles.wordImage} />
+            )}
+            <View style={styles.wordTextContainer}>
+              <Text>
+                {item.native} - {item.translation}
               </Text>
+            </View>
+            <TouchableOpacity onPress={() => handleDeleteWord(item.id)}>
+              <AntDesign name="delete" size={24} color="black" />
             </TouchableOpacity>
           </View>
         )}
@@ -59,6 +62,7 @@ const WordListScreen = () => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -66,10 +70,19 @@ const styles = StyleSheet.create({
   },
   wordContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    alignItems: "center", // Добавлено для выравнивания элементов по вертикали
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
+  },
+  wordImage: {
+    width: 50,
+    height: 50,
+    marginRight: 10,
+    borderRadius: 5,
+  },
+  wordTextContainer: {
+    flex: 1,
   },
   deleteButton: {
     color: "red",

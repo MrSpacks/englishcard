@@ -1,21 +1,18 @@
 import React from "react";
-import { View, Text, Button, StyleSheet, Animated } from "react-native";
+import { View, Text, Button, StyleSheet, Animated, Image } from "react-native";
 
 interface CardProps {
-  word: string;
-  translation: string;
+  item: {
+    word: string;
+    translation: string;
+    imageUri?: string;
+  };
   flipped: boolean;
   onFlip: () => void;
   onNext: () => void;
 }
 
-const Card: React.FC<CardProps> = ({
-  word,
-  translation,
-  flipped,
-  onFlip,
-  onNext,
-}) => {
+const Card: React.FC<CardProps> = ({ item, flipped, onFlip, onNext }) => {
   const flipAnim = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
@@ -35,6 +32,7 @@ const Card: React.FC<CardProps> = ({
         }),
       },
     ],
+    zIndex: flipped ? 0 : 1,
   };
 
   const backStyle = {
@@ -46,16 +44,17 @@ const Card: React.FC<CardProps> = ({
         }),
       },
     ],
+    zIndex: flipped ? 1 : 0,
   };
 
   return (
     <View style={styles.cardContainer}>
       {/* Передняя сторона */}
       <Animated.View
-        style={[styles.card, frontStyle, { zIndex: flipped ? 0 : 1 }]}
+        style={[styles.card, frontStyle, { backfaceVisibility: "hidden" }]}
       >
         <View style={styles.cardContent}>
-          <Text style={styles.wordText}>{word}</Text>
+          <Text style={styles.wordText}>{item.word}</Text>
           <View style={styles.buttonContainer}>
             <Button title="Не знаю" onPress={onFlip} />
             <Button title="Знаю" onPress={onNext} />
@@ -69,11 +68,22 @@ const Card: React.FC<CardProps> = ({
           styles.card,
           styles.back,
           backStyle,
-          { zIndex: flipped ? 1 : 0 },
+          { backfaceVisibility: "hidden" },
         ]}
       >
         <View style={styles.cardContent}>
-          <Text style={styles.wordText}>{translation}</Text>
+          <Text style={styles.wordText}>{item.translation}</Text>
+          {item.imageUri ? (
+            <Image
+              source={{ uri: item.imageUri }}
+              style={styles.cardImage}
+              onError={() =>
+                console.log("Ошибка загрузки изображения:", item.imageUri)
+              }
+            />
+          ) : (
+            <Text style={styles.noImageText}>Изображение отсутствует</Text>
+          )}
           <Button title="Запомнил" onPress={onNext} />
         </View>
       </Animated.View>
@@ -112,6 +122,20 @@ const styles = StyleSheet.create({
   },
   wordText: {
     fontSize: 24,
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  cardImage: {
+    width: 200,
+    height: 150,
+    marginBottom: 20,
+    borderRadius: 10,
+    resizeMode: "contain",
+    backgroundColor: "#f0f0f0",
+  },
+  noImageText: {
+    fontSize: 16,
+    color: "#888",
     marginBottom: 20,
   },
   buttonContainer: {

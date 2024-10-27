@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import uuid from "react-native-uuid";
 
@@ -6,13 +6,17 @@ interface Word {
   id: string;
   native: string;
   translation: string;
-  imageUrl?: string; // Добавьте это свойство, сделав его необязательным
+  imageUri?: string; // Добавлено свойство imageUri
 }
 
 interface WordsContextProps {
   words: Word[];
-  addWord: (native: string, translation: string) => Promise<void>;
-  deleteWord: (id: string) => void;
+  addWord: (
+    native: string,
+    translation: string,
+    imageUri?: string // Добавлено imageUri
+  ) => Promise<void>;
+  deleteWord: (id: string) => Promise<void>;
   loadWords: () => Promise<void>;
 }
 
@@ -26,12 +30,22 @@ export const WordsProvider: React.FC<{ children: React.ReactNode }> = ({
   const loadWords = async () => {
     const storedWords = await AsyncStorage.getItem("@words_list");
     if (storedWords) {
-      setWords(JSON.parse(storedWords));
+      const parsedWords = JSON.parse(storedWords);
+      setWords(parsedWords);
     }
   };
 
-  const addWord = async (native: string, translation: string) => {
-    const newWord = { id: uuid.v4().toString(), native, translation };
+  const addWord = async (
+    native: string,
+    translation: string,
+    imageUri?: string // Добавлено imageUri
+  ) => {
+    const newWord: Word = {
+      id: uuid.v4().toString(),
+      native,
+      translation,
+      imageUri, // Сохраняем imageUri
+    };
     const updatedWords = [...words, newWord];
     setWords(updatedWords);
     await AsyncStorage.setItem("@words_list", JSON.stringify(updatedWords));
@@ -42,6 +56,10 @@ export const WordsProvider: React.FC<{ children: React.ReactNode }> = ({
     setWords(updatedWords);
     await AsyncStorage.setItem("@words_list", JSON.stringify(updatedWords));
   };
+
+  useEffect(() => {
+    loadWords();
+  }, []);
 
   return (
     <WordsContext.Provider value={{ words, addWord, deleteWord, loadWords }}>
