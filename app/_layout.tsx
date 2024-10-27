@@ -9,14 +9,14 @@ export default function TabLayout() {
     <WordsProvider>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: "#ffd33d",
+          tabBarActiveTintColor: "#325AFF",
           headerStyle: {
-            backgroundColor: "#25292e",
+            backgroundColor: "#1E1E1E",
           },
           headerShadowVisible: false,
           headerTintColor: "#fff",
           tabBarStyle: {
-            backgroundColor: "#25292e",
+            backgroundColor: "#1E1E1E",
           },
         }}
       >
