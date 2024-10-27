@@ -16,6 +16,8 @@ const AddWordScreen = () => {
     }
 
     await addWord(nativeWord, translation);
+    setNativeWord("");
+    setTranslation("");
     router.back();
   };
 
@@ -23,15 +25,17 @@ const AddWordScreen = () => {
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        placeholder="Слово на родном языке"
+        placeholder="Слово"
         value={nativeWord}
         onChangeText={setNativeWord}
+        maxLength={18}
       />
       <TextInput
         style={styles.input}
         placeholder="Перевод"
         value={translation}
         onChangeText={setTranslation}
+        maxLength={18}
       />
       <Button title="Добавить" onPress={handleAddWord} />
     </View>
